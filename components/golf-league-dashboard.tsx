@@ -25,7 +25,6 @@ export default function GolfLeagueDashboard() {
   const [standingsLoading, setStandingsLoading] = useState(true)
   const [submitMessage, setSubmitMessage] = useState('')
 
-  // Fetch weeks once on mount
   useEffect(() => {
     fetch('/api/weeks')
       .then((r) => r.json())
@@ -37,7 +36,6 @@ export default function GolfLeagueDashboard() {
       .catch(console.error)
   }, [])
 
-  // Fetch schedule whenever selected week changes
   const fetchSchedule = useCallback(() => {
     setScheduleLoading(true)
     fetch(`/api/schedule/${selectedWeek}`)
@@ -47,7 +45,6 @@ export default function GolfLeagueDashboard() {
       .finally(() => setScheduleLoading(false))
   }, [selectedWeek])
 
-  // Fetch standings whenever selected week changes
   const fetchStandings = useCallback(() => {
     setStandingsLoading(true)
     fetch(`/api/standings/${selectedWeek}`)
@@ -74,17 +71,15 @@ export default function GolfLeagueDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">PDP Golf League</h1>
-          <p className="text-lg text-gray-600">
+          <h1 className="text-4xl font-bold text-foreground mb-2">PDP Golf League</h1>
+          <p className="text-lg text-muted-foreground">
             {currentWeek
               ? `Week ${currentWeek.week_number} — 12 Teams | 12 Weeks`
               : '12 Teams | 12 Weeks'}
           </p>
         </div>
 
-        {/* Week Selector */}
         <div className="mb-6">
           <WeekSelector
             weeks={weeks}
@@ -94,7 +89,6 @@ export default function GolfLeagueDashboard() {
           />
         </div>
 
-        {/* Main Content */}
         <Tabs defaultValue="schedule" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="schedule">League Schedule</TabsTrigger>

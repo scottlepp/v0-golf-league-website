@@ -94,7 +94,7 @@ export default function ScoreSubmissionForm({ weekId, onSuccess, submitMessage }
     <Card>
       <CardHeader>
         <CardTitle>Submit Scores</CardTitle>
-        <CardDescription>Enter your team&apos;s scores for Week {weekId}</CardDescription>
+        <CardDescription>Enter your team&apos;s scores for Week {weekId}.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -113,7 +113,6 @@ export default function ScoreSubmissionForm({ weekId, onSuccess, submitMessage }
               </Alert>
             )}
 
-            {/* Team Selection */}
             <FormField
               control={form.control}
               name="team_id"
@@ -142,7 +141,6 @@ export default function ScoreSubmissionForm({ weekId, onSuccess, submitMessage }
               )}
             />
 
-            {/* Player 1 Score */}
             <FormField
               control={form.control}
               name="player1_score"
@@ -164,7 +162,6 @@ export default function ScoreSubmissionForm({ weekId, onSuccess, submitMessage }
               )}
             />
 
-            {/* Player 2 Score */}
             <FormField
               control={form.control}
               name="player2_score"
@@ -186,13 +183,11 @@ export default function ScoreSubmissionForm({ weekId, onSuccess, submitMessage }
               )}
             />
 
-            {/* Total Score Display */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-600 font-medium">Total Score</p>
               <p className="text-2xl font-bold text-blue-900 font-mono">{totalScore}</p>
             </div>
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={isSubmitting}
