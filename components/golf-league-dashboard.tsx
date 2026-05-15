@@ -1,42 +1,74 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import useSWR from 'swr'
+import { useState, useEffect, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import WeekSelector from './week-selector'
 import LeagueSchedule from './league-schedule'
 import Standings from './standings'
 import ScoreSubmissionForm from './score-submission-form'
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+interface Week {
+  id: number
+  week_number: number
+  start_date: string
+  is_current: boolean
+  is_completed: boolean
+}
 
 export default function GolfLeagueDashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number>(1)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [weeks, setWeeks] = useState<Week[]>([])
+  const [scheduleData, setScheduleData] = useState<any[]>([])
+  const [standingsData, setStandingsData] = useState<any[]>([])
+  const [scheduleLoading, setScheduleLoading] = useState(true)
+  const [standingsLoading, setStandingsLoading] = useState(true)
   const [submitMessage, setSubmitMessage] = useState('')
 
-  const { data: weeks } = useSWR('/api/weeks', fetcher)
-  const { data: scheduleData, mutate: mutateSchedule } = useSWR(
-    selectedWeek ? `/api/schedule/${selectedWeek}` : null,
-    fetcher
-  )
-  const { data: standingsData, mutate: mutateStandings } = useSWR(
-    selectedWeek ? `/api/standings/${selectedWeek}` : null,
-    fetcher
-  )
+  // Fetch weeks once on mount
+  useEffect(() => {
+    fetch('/api/weeks')
+      .then((r) => r.json())
+      .then((data) => {
+        setWeeks(data)
+        const current = data.find((w: Week) => w.is_current)
+        if (current) setSelectedWeek(current.week_number)
+      })
+      .catch(console.error)
+  }, [])
 
-  const currentWeek = weeks?.find((w: any) => w.is_current)
+  // Fetch schedule whenever selected week changes
+  const fetchSchedule = useCallback(() => {
+    setScheduleLoading(true)
+    fetch(`/api/schedule/${selectedWeek}`)
+      .then((r) => r.json())
+      .then((data) => setScheduleData(data))
+      .catch(console.error)
+      .finally(() => setScheduleLoading(false))
+  }, [selectedWeek])
+
+  // Fetch standings whenever selected week changes
+  const fetchStandings = useCallback(() => {
+    setStandingsLoading(true)
+    fetch(`/api/standings/${selectedWeek}`)
+      .then((r) => r.json())
+      .then((data) => setStandingsData(data))
+      .catch(console.error)
+      .finally(() => setStandingsLoading(false))
+  }, [selectedWeek])
+
+  useEffect(() => {
+    fetchSchedule()
+    fetchStandings()
+  }, [fetchSchedule, fetchStandings])
+
+  const currentWeek = weeks.find((w) => w.is_current)
 
   const handleScoresSubmitted = () => {
-    mutateSchedule()
-    mutateStandings()
-    setIsSubmitting(false)
+    fetchSchedule()
+    fetchStandings()
     setSubmitMessage('Scores submitted successfully!')
-    setTimeout(() => setSubmitMessage(''), 3000)
+    setTimeout(() => setSubmitMessage(''), 4000)
   }
 
   return (
@@ -46,14 +78,16 @@ export default function GolfLeagueDashboard() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">PDP Golf League</h1>
           <p className="text-lg text-gray-600">
-            {currentWeek && `Week ${currentWeek.week_number} - 12 Teams | 12 Weeks`}
+            {currentWeek
+              ? `Week ${currentWeek.week_number} — 12 Teams | 12 Weeks`
+              : '12 Teams | 12 Weeks'}
           </p>
         </div>
 
         {/* Week Selector */}
         <div className="mb-6">
           <WeekSelector
-            weeks={weeks || []}
+            weeks={weeks}
             selectedWeek={selectedWeek}
             onWeekChange={setSelectedWeek}
             currentWeek={currentWeek?.week_number}
@@ -68,25 +102,22 @@ export default function GolfLeagueDashboard() {
             <TabsTrigger value="submit">Submit Scores</TabsTrigger>
           </TabsList>
 
-          {/* League Schedule Tab */}
           <TabsContent value="schedule">
             <LeagueSchedule
-              schedule={scheduleData || []}
+              schedule={scheduleData}
               weekNumber={selectedWeek}
-              isLoading={!scheduleData}
+              isLoading={scheduleLoading}
             />
           </TabsContent>
 
-          {/* Standings Tab */}
           <TabsContent value="standings">
             <Standings
-              standings={standingsData || []}
+              standings={standingsData}
               weekNumber={selectedWeek}
-              isLoading={!standingsData}
+              isLoading={standingsLoading}
             />
           </TabsContent>
 
-          {/* Submit Scores Tab */}
           <TabsContent value="submit">
             <ScoreSubmissionForm
               weekId={selectedWeek}
