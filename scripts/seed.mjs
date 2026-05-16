@@ -5,12 +5,17 @@ import { neon } from '@neondatabase/serverless'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-if (!process.env.DATABASE_URL) {
-  console.error('DATABASE_URL is not set. Run with: node --env-file=.env.local scripts/seed.mjs')
+const connectionString =
+  process.env.PDP_GOLF_DATABASE_URL ?? process.env.DATABASE_URL
+
+if (!connectionString) {
+  console.error(
+    'PDP_GOLF_DATABASE_URL (or DATABASE_URL) is not set. Run with: node --env-file=.env.local scripts/seed.mjs',
+  )
   process.exit(1)
 }
 
-const sql = neon(process.env.DATABASE_URL)
+const sql = neon(connectionString)
 const seedPath = join(__dirname, 'seed.sql')
 const fullSql = readFileSync(seedPath, 'utf8')
 
