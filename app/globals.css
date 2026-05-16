@@ -1,8 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import '@neondatabase/auth/ui/tailwind';
 
 @custom-variant dark (&:is(.dark *));
+
+/* PDP Golf League design tokens */
+:root {
+  --pdp-cream: #F4EFE3;
+  --pdp-cream-soft: #FBF7EC;
+  --pdp-paper: #d9cfb6;
+  --pdp-fairway: #1B4332;
+  --pdp-fairway-bright: #2C7A4B;
+  --pdp-fairway-dark: #143527;
+  --pdp-sand: #C9924A;
+  --pdp-clay: #B33636;
+  --pdp-ink: #1F1F1F;
+  --pdp-stone: #6E6857;
+  --pdp-fog: #A0998A;
+}
+
+body {
+  background: var(--pdp-paper);
+}
+
+/* iOS-style scroll-area, hide horizontal scrollbar */
+.pdp-strip::-webkit-scrollbar { display: none; }
+.pdp-strip { scrollbar-width: none; }
+
+@keyframes pdp-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes pdp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.pdp-slide-up { animation: pdp-slide-up 0.22s ease; }
+.pdp-fade-in { animation: pdp-fade-in 0.18s ease; }
+
+/* No spin buttons on number inputs */
+.pdp-num::-webkit-outer-spin-button,
+.pdp-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pdp-num { -moz-appearance: textfield; }
 
 :root {
   --background: oklch(1 0 0);

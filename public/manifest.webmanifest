@@ -1,0 +1,14 @@
+{
+  "name": "PDP Golf League",
+  "short_name": "PDP Golf",
+  "description": "PDP Golf League — schedule, standings, and scorecards.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4EFE3",
+  "theme_color": "#1B4332",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

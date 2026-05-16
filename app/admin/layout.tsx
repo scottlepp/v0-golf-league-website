@@ -11,27 +11,101 @@ export default async function AdminLayout({
   const session = await requireAdmin()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white shadow-sm">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/admin" className="text-xl font-bold text-green-900">
-              PDP Admin
+    <div style={{ minHeight: '100vh', background: 'var(--pdp-cream)' }}>
+      <header
+        style={{
+          background: 'var(--pdp-cream-soft)',
+          borderBottom: '1px solid rgba(27,67,50,0.1)',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1100,
+            margin: '0 auto',
+            padding: '14px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <Link
+              href="/admin"
+              style={{
+                fontFamily: '"Instrument Serif", serif',
+                fontSize: 22,
+                color: 'var(--pdp-fairway)',
+                letterSpacing: '-0.01em',
+                textDecoration: 'none',
+              }}
+            >
+              PDP <span style={{ fontStyle: 'italic', opacity: 0.85 }}>Admin</span>
             </Link>
-            <nav className="flex gap-4 text-sm">
-              <Link href="/admin/weeks" className="text-gray-700 hover:text-green-900">Weeks</Link>
-              <Link href="/admin/teams" className="text-gray-700 hover:text-green-900">Teams</Link>
-              <Link href="/admin/schedule" className="text-gray-700 hover:text-green-900">Schedule</Link>
-              <Link href="/admin/scores" className="text-gray-700 hover:text-green-900">Scores</Link>
+            <nav style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              {[
+                { href: '/admin/weeks', label: 'Weeks' },
+                { href: '/admin/teams', label: 'Teams' },
+                { href: '/admin/schedule', label: 'Schedule' },
+                { href: '/admin/scores', label: 'Scores' },
+                { href: '/admin/course', label: 'Course' },
+              ].map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  style={{
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--pdp-fairway)',
+                    padding: '6px 10px',
+                    borderRadius: 8,
+                    textDecoration: 'none',
+                    background: 'rgba(27,67,50,0.06)',
+                  }}
+                >
+                  {l.label}
+                </Link>
+              ))}
             </nav>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-gray-600">{session.user.email}</span>
-            <Link href="/" className="text-green-900 hover:underline">Site</Link>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              fontFamily: 'Manrope, sans-serif',
+              fontSize: 12,
+            }}
+          >
+            <span style={{ color: 'var(--pdp-stone)' }}>{session.user?.email}</span>
+            <Link
+              href="/"
+              style={{
+                color: 'var(--pdp-fairway)',
+                fontWeight: 700,
+                textDecoration: 'none',
+                padding: '6px 10px',
+                borderRadius: 8,
+                background: 'rgba(27,67,50,0.06)',
+              }}
+            >
+              ← Back to app
+            </Link>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      <main
+        style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          padding: '24px 20px 60px',
+        }}
+      >
+        {children}
+      </main>
     </div>
   )
 }
