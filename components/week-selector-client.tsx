@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -20,26 +19,24 @@ interface Week {
 
 interface WeekSelectorClientProps {
   weeks: Week[]
-  defaultWeek: number
+  selectedWeek: number
+  onWeekChange: (weekNumber: number) => void
 }
 
 export default function WeekSelectorClient({
   weeks,
-  defaultWeek,
+  selectedWeek,
+  onWeekChange,
 }: WeekSelectorClientProps) {
-  const [selectedWeek, setSelectedWeek] = useState(defaultWeek.toString())
-
-  const handleWeekChange = (value: string) => {
-    setSelectedWeek(value)
-    // Trigger page reload or state update - for now just update local state
-    // The parent component will need to handle the actual navigation/update
-  }
-
-  const currentWeek = weeks.find((w) => w.week_number === defaultWeek)
+  const currentWeek = weeks.find((w) => w.week_number === selectedWeek)
+  const trueCurrent = weeks.find((w) => w.is_current)
 
   return (
     <div className="flex items-center gap-2">
-      <Select value={selectedWeek} onValueChange={handleWeekChange}>
+      <Select
+        value={selectedWeek.toString()}
+        onValueChange={(value) => onWeekChange(parseInt(value, 10))}
+      >
         <SelectTrigger className="w-48">
           <SelectValue placeholder="Select a week" />
         </SelectTrigger>
@@ -58,9 +55,9 @@ export default function WeekSelectorClient({
           ))}
         </SelectContent>
       </Select>
-      {currentWeek?.is_current && (
+      {trueCurrent && currentWeek?.is_current && (
         <Badge variant="outline" className="text-green-600 border-green-600">
-          Current: Week {currentWeek.week_number}
+          Current: Week {trueCurrent.week_number}
         </Badge>
       )}
     </div>

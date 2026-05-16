@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -15,12 +16,34 @@ interface Schedule {
 }
 
 interface Props {
-  schedule: Schedule[]
+  weekId: number
   weekNumber: number
-  isLoading: boolean
 }
 
-export default function LeagueSchedule({ schedule, weekNumber, isLoading }: Props) {
+export default function LeagueSchedule({ weekId, weekNumber }: Props) {
+  const [schedule, setSchedule] = useState<Schedule[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    setIsLoading(true)
+    fetch(`/api/schedule/${weekId}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (!cancelled) setSchedule(Array.isArray(data) ? data : [])
+      })
+      .catch((err) => {
+        console.error('Error fetching schedule:', err)
+        if (!cancelled) setSchedule([])
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [weekId])
+
   return (
     <Card>
       <CardHeader>

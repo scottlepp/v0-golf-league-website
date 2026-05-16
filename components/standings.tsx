@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -16,12 +17,34 @@ interface Standing {
 }
 
 interface Props {
-  standings: Standing[]
+  weekId: number
   weekNumber: number
-  isLoading: boolean
 }
 
-export default function Standings({ standings, weekNumber, isLoading }: Props) {
+export default function Standings({ weekId, weekNumber }: Props) {
+  const [standings, setStandings] = useState<Standing[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    setIsLoading(true)
+    fetch(`/api/standings/${weekId}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (!cancelled) setStandings(Array.isArray(data) ? data : [])
+      })
+      .catch((err) => {
+        console.error('Error fetching standings:', err)
+        if (!cancelled) setStandings([])
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [weekId])
+
   const getRankColor = (rank: number | null) => {
     if (!rank) return 'bg-gray-100'
     if (rank === 1) return 'bg-yellow-100'
@@ -67,7 +90,7 @@ export default function Standings({ standings, weekNumber, isLoading }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedStandings.map((standing, idx) => (
+                {sortedStandings.map((standing) => (
                   <TableRow
                     key={standing.id}
                     className={`${getRankColor(standing.rank)} border-l-4 ${
