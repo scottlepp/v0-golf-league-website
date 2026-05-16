@@ -6,6 +6,7 @@ import LeagueSchedule from './league-schedule'
 import Standings from './standings'
 import ScoreSubmissionForm from './score-submission-form'
 import WeekSelectorClient from './week-selector-client'
+import AuthWidget from './auth-widget'
 
 interface Week {
   id: number
@@ -59,13 +60,18 @@ export default function GolfLeagueDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-green-900">PDP Golf League</h1>
-          <p className="text-lg text-muted-foreground">
-            {currentWeek
-              ? `Week ${currentWeek.week_number} — 12 Teams | 12 Weeks`
-              : '12 Teams | 12 Weeks'}
-          </p>
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div className="flex-1 text-center">
+            <h1 className="text-4xl font-bold text-green-900">PDP Golf League</h1>
+            <p className="text-lg text-muted-foreground">
+              {currentWeek
+                ? `Week ${currentWeek.week_number} — 12 Teams | 12 Weeks`
+                : '12 Teams | 12 Weeks'}
+            </p>
+          </div>
+          <div className="pt-2">
+            <AuthWidget />
+          </div>
         </div>
 
         <div className="mb-6 flex items-center justify-center gap-4">
