@@ -32,19 +32,31 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const isProd = process.env.NODE_ENV === 'production'
+  // Always proactively unregister any previously-installed SW (e.g. the old
+  // /sw.js path or a dev-mode registration), then in prod register the new one.
+  const swScript = `if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then((regs) => Promise.all(regs.filter((r) => !r.active || r.active.scriptURL.indexOf('/pdp-sw.js') === -1).map((r) => r.unregister())))
+      .catch(() => {});
+    ${
+      isProd
+        ? `window.addEventListener('load', () => {
+             navigator.serviceWorker.register('/pdp-sw.js').catch(() => {});
+           });`
+        : `if (window.caches && caches.keys) {
+             caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
+           }`
+    }
+  }`
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-        <Script id="register-sw" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {});
-              });
-            }
-          `}
+        {isProd && <Analytics />}
+        <Script id="sw-lifecycle" strategy="afterInteractive">
+          {swScript}
         </Script>
       </body>
     </html>
